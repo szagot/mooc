@@ -1,7 +1,29 @@
 from django.db import models
 
 
+class CourseManager(models.Manager):
+    """
+    Gerenciador da tabela do BD
+    Substitui o objects padrão do Django
+    """
+
+    def search(self, query):
+        """
+        Pesquisa dentro da tabela, pelo conteúdo do nome ou pelo conteudo da descrição
+        """
+        return self.get_queryset().filter(
+            # Usando o models.Q é possível definir o tipo de pesquisa entre os campos
+            # | = OR
+            # & = AND
+            # [campo]__icontains = query
+            models.Q(name__icontains=query) | models.Q(description__icontains=query)
+        )
+
+
 class Course(models.Model):
+    """
+    Modelo para Tabela do BD
+    """
     # Campo de texto
     name = models.CharField('Nome', max_length=100)
     # Campo de Texto para slugs
@@ -18,3 +40,6 @@ class Course(models.Model):
     created_at = models.DateTimeField('Criado em', auto_now_add=True)
     # Data/Hora que será preenchido automaticamente no UPDATE
     updated_at = models.DateTimeField('Atualizado em', auto_now=True)
+
+    # Substitui o object padrão (manager padrão) pelo acima
+    objects = CourseManager()
