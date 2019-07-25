@@ -36,7 +36,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'simplemooc.core'
+    'simplemooc.core',
+    'simplemooc.courses',
 ]
 
 MIDDLEWARE = [
@@ -114,3 +115,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Relativo a onde o Django deve salvar as imagens que tem o upload feito pelos models do BD
+MEDIA_ROOT = os.path.join(BASE_DIR, 'simplemooc', 'media')
