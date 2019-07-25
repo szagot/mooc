@@ -19,6 +19,6 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('', include('simplemooc.core.urls')),
+    path('', include('simplemooc.core.urls', namespace='core')),
     path('admin/', admin.site.urls),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)  # Precisa disso para aceitar os arquivos estaticos
