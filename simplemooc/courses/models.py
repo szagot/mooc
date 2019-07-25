@@ -12,7 +12,7 @@ class Course(models.Model):
     start_date = models.DateField('Data de Início', null=True, blank=True)
     # Campo de imagem. Irá salvar no diretório indicado, porém dentro de MEDIA_ROOT indicado em settings.py
     # Campo dependente da biblioteca Pillow que não vem instalada no Python por padrão
-    image = models.ImageField('Imagem', upload_to='courses/images')
+    image = models.ImageField('Imagem', upload_to='courses/images', null=True, blank=True)
 
     # Data/Hora que será preenchido automaticamente no INSERT
     created_at = models.DateTimeField('Criado em', auto_now_add=True)
