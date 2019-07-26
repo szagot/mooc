@@ -9,7 +9,7 @@
             <div class="pure-u-1">
                 <div class="l-box splash-text">
                     <h1 class="splash-head">
-                        {{ course.name }}
+                        {{ course }}
                     </h1>
                     <h2 class="splash-subhead">
                         {{ course.description }}
@@ -25,7 +25,7 @@
         <div class="pure-u-2-3">
             <div class="l-box">
                 <h4 class="content-subhead">Sobre o Curso</h4>
-                <p>{{ course.about }}</p>
+                <p>{{ course.about | linebreaks }}</p>
             </div>
         </div>
         <div class="pure-u-1-3">
