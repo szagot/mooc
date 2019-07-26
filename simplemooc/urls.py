@@ -15,9 +15,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
 
 urlpatterns = [
     path('', include('simplemooc.core.urls', namespace='core')),
     path('cursos/', include('simplemooc.courses.urls', namespace='courses')),
     path('admin/', admin.site.urls),
 ]
+
+# Se estiver no modo DEBUG, força o django a servir as URLs de imagens estáticas
+if settings.DEBUG:
+    from django.conf.urls.static import static
+
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
