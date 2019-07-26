@@ -8,3 +8,10 @@ def index(request):
     return render(request, 'courses/index.html', {
         'courses': cursos
     })
+
+
+def details(request, course_id):
+    curso = Course.objects.get(pk=course_id)
+    return render(request, 'courses/detalhe.html', {
+        'course': curso
+    })

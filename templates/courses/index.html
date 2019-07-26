@@ -1,6 +1,6 @@
 {% extends 'template.html' %}
 {% load static %}
-{% block title %}Curso{% endblock %}
+{% block title %}Cursos{% endblock %}
 
 {% block content %}
 
@@ -14,10 +14,11 @@
     </div>
 
     {% for course in courses %}
+
         <div class="pure-g-r content-ribbon">
             <div class="pure-u-1-3">
                 <div class="l-box">
-                    <a href="#">
+                    <a href="{{ course.pk }}">
                         {% if course.image %}
                             <img src="{{ course.image.url }}" alt="{{ course }}">
                         {% else %}
@@ -28,19 +29,22 @@
             </div>
             <div class="pure-u-2-3">
                 <div class="l-box">
-                    <h4 class="content-subhead"><a href="#" title="">{{ course }}</a></h4>
+                    <h4 class="content-subhead"><a href="{{ course.pk }}" title="">{{ course }}</a></h4>
                     {{ course.description | linebreaks }}
                 </div>
             </div>
         </div>
-    {% endfor %}
 
-    <div class="pure-g-r content-ribbon">
-        <div class="pure-u-1">
-            <div class="l-box">
-                <p>Nenhum curso está disponível na plataforma</p>
+    {% empty %}
+
+        <div class="pure-g-r content-ribbon">
+            <div class="pure-u-1">
+                <div class="l-box">
+                    <p>Nenhum curso está disponível na plataforma</p>
+                </div>
             </div>
         </div>
-    </div>
+
+    {% endfor %}
 
 {% endblock %}

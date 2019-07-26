@@ -29,7 +29,8 @@ class Course(models.Model):
     # Campo de Texto para slugs
     slug = models.SlugField('Atalho')
     # Campo de textos longos. blank informa que o campo não é obrigatório
-    description = models.TextField('Descrição', blank=True)
+    description = models.TextField('Descrição Simples', blank=True)
+    about = models.TextField('Sobre o Curso', blank=True)
     # Campo de Data. Não é obrigatório e pode ser NULL no BD
     start_date = models.DateField('Data de Início', null=True, blank=True)
     # Campo de imagem. Irá salvar no diretório indicado, porém dentro de MEDIA_ROOT indicado em settings.py

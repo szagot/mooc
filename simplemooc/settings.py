@@ -125,8 +125,8 @@ USE_TZ = True
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
-STATIC_URL = '/static/'
+STATIC_URL = '/public/'
 
 # Relativo a onde o Django deve salvar as imagens que tem o upload feito pelos models do BD
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = '/media/'
+MEDIA_URL = '/images/'
