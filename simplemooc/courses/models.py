@@ -51,6 +51,15 @@ class Course(models.Model):
         """
         return self.name
 
+    def get_absolute_url(self):
+        """
+        Necessário para retornar a url absoluta com o link correto (cursos/<slug>)
+        No template use: {{ course.get_absolute_url }} ou {% url 'courses:details' course.slug %}
+        Se usar a segunda forma, esse método não é mais necessario, mas no admin não vai aparecer a opção 'ver no site'
+        """
+        from django.urls import reverse
+        return reverse('courses:details', args=[str(self.slug)])
+
     class Meta:
         """
         Importante para a tradução do nome da Classe
