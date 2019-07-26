@@ -129,4 +129,4 @@ STATICFILES_DIRS = [
 ]
 
 # Relativo a onde o Django deve salvar as imagens que tem o upload feito pelos models do BD
-MEDIA_ROOT = os.path.join(BASE_DIR, 'simplemooc', 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

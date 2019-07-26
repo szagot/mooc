@@ -43,3 +43,18 @@ class Course(models.Model):
 
     # Substitui o object padrão (manager padrão) pelo acima
     objects = CourseManager()
+
+    def __str__(self):
+        """
+        Importante para o Admin imprimir automaticamente o nome correto para o objeto
+        """
+        return self.name
+
+    class Meta:
+        """
+        Importante para a tradução do nome da Classe
+        """
+        verbose_name = 'Curso'
+        verbose_name_plural = 'Cursos'
+        # Para definir em ordem decrescente, coloque o sinal - na frente. Ex.: ['-name']
+        ordering = ['name']
