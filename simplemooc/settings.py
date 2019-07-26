@@ -55,7 +55,10 @@ ROOT_URLCONF = 'simplemooc.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            # Indicando qual o diretório padrão para os templates
+            os.path.join(BASE_DIR, 'templates')
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -119,6 +122,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Indicando qual o diretório dos arquivos estáticos
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 
 # Relativo a onde o Django deve salvar as imagens que tem o upload feito pelos models do BD
 MEDIA_ROOT = os.path.join(BASE_DIR, 'simplemooc', 'media')
