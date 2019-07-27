@@ -134,11 +134,11 @@ MEDIA_URL = '/images/'
 # Configuração de Email
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Desenvolvimento. Comente para enviar por SMTP
 DEFAULT_FROM_EMAIL = 'Daniel Bispo <szagot@gmail.com>'
-EMAIL_USE_TLS = True
+EMAIL_USE_SSL = True
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'szagot.gmail.com'
+EMAIL_HOST_USER = 'szagot@gmail.com'
 EMAIL_HOST_PASSWORD = 'zrtdkwqmchtnchqn'  # https://security.google.com/settings/security/apppasswords
-EMAIL_PORT = 587
+EMAIL_PORT = 465
 
 # Email para o formulário de contato
 CONTACT_EMAIL = 'danielbispo.sp64@gmail.com'
