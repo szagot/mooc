@@ -1,4 +1,6 @@
 from django import forms
+from django.core.mail import send_mail
+from django.conf import settings
 
 
 class ContactCourse(forms.Form):
@@ -30,3 +32,20 @@ class ContactCourse(forms.Form):
     email = forms.EmailField(label='E-mail')
     # Campo Mensagem. Não existe o tipo TextField. Ao invés, use o widget
     message = forms.CharField(label='Mensagem/Dúvida', widget=forms.Textarea)
+
+    def send_mail(self, course):
+        """
+        Definindo envio de email
+        """
+        subject = f'[{course}] | Contato'
+        message = f'Nome: {self.cleaned_data["name"]};' + \
+                  f'E-mail: {self.cleaned_data["email"]};' + \
+                  f'{self.cleaned_data["message"]}'
+        send_mail(
+            subject,
+            message,
+            # De
+            settings.DEFAULT_FROM_EMAIL,
+            # Para
+            [settings.CONTACT_EMAIL]
+        )

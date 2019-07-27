@@ -29,7 +29,8 @@ def details(request, course_slug):
             # Se precisar acessar os dados validados do formulário, eles estarão no dicionário:
             # form.cleaned_data
 
-            # Limpa o formulário por estar válido
+            # Envia email e limpa o formulário por estar válido
+            form.send_mail(curso)
             form = ContactCourse()
     else:
         form = ContactCourse()
