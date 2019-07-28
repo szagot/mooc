@@ -143,3 +143,8 @@ EMAIL_PORT = 465
 
 # Email para o formulário de contato
 CONTACT_EMAIL = 'danielbispo.sp64@gmail.com'
+
+# Autenticação
+LOGIN_URL = 'accounts:login'
+LOGIN_REDIRECT_URL = 'core:home'
+# LOGOUT_URL = 'accounts:logout'
