@@ -6,6 +6,8 @@ from . import views
 app_name = 'accounts'
 
 urlpatterns = [
+    path('', views.dashboard, name='dashboard'),
+
     # Usando a view do próprio Django para Login de usuários (não tem a ver com o ADMIN)
     path('entrar/', LoginView.as_view(template_name='accounts/login.html'), name='login'),
     # Usando a view do próprio Django para Logout

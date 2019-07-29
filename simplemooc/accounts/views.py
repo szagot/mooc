@@ -1,6 +1,16 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
 from .form import RegisterForm
+
+
+# Decorador para verificar se está logado antes de executar a view
+@login_required
+def dashboard(request):
+    """
+    View após logado
+    """
+    return render(request, 'accounts/dashboard.html')
 
 
 def register(request):

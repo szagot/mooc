@@ -20,6 +20,7 @@
 
             <!-- Verifica se o usuário está logado -->
             {% if user.is_authenticated %}
+                <li><a href="{% url 'accounts:dashboard' %}">Painel</a></li>
                 <li><a href="{% url 'accounts:logout' %}">Sair</a></li>
             {% else %}
                 <li><a href="{% url 'accounts:login' %}">Entrar</a></li>
