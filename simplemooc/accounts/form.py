@@ -34,3 +34,27 @@ class RegisterForm(UserCreationForm):
             user.save()
 
         return user
+
+
+class EditAccountForm(forms.ModelForm):
+    """
+    Formulário de Edição de usuário
+    """
+
+    def clean_email(self):
+        """
+        Toda função clean_<campo>() é executada automaticamente para fazer verificações antes de salvar
+        """
+        email = self.cleaned_data['email']
+        # Verifica se o email já existe, excluindo o usuário da própria instancia
+        if User.objects.filter(email=email).exclude(pk=self.instance.pk).exists():
+            raise forms.ValidationError('Outro usuário já está usando esse email')
+
+        # Se não existe duplicações, retorna o email
+        return email
+
+    class Meta:
+        # Define qual o modelo a ser usado
+        model = User
+        # Quais campos podem ser alterados?
+        fields = ['username', 'email', 'first_name', 'last_name']
