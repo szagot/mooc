@@ -148,3 +148,5 @@ CONTACT_EMAIL = 'danielbispo.sp64@gmail.com'
 LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'core:home'
 LOGOUT_URL = 'accounts:logout'
+# Qual é o model padrão para usuários? Comente para usar o model do Django
+AUTH_USER_MODEL = 'accounts.User'
