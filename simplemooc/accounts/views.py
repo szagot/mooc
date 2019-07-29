@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.decorators import login_required
 from .form import RegisterForm, EditAccountForm
 
@@ -49,7 +50,7 @@ def edit(request):
     Editando usuário
     """
     context = {}
-    
+
     # Houve postagem?
     if request.method == 'POST':
         # Pega a postagem e verifica se os dados estão válidos
@@ -64,3 +65,23 @@ def edit(request):
 
     context['form'] = form
     return render(request, 'accounts/dashboard/edit.html', context)
+
+
+@login_required
+def edit_password(request):
+    """
+    Alteração de senha
+    """
+    context = {}
+
+    if request.method == 'POST':
+        form = PasswordChangeForm(data=request.POST, user=request.user)
+        if form.is_valid():
+            form.save()
+            form = PasswordChangeForm(user=request.user)
+            context['success'] = True
+    else:
+        form = PasswordChangeForm(user=request.user)
+
+    context['form'] = form
+    return render(request, 'accounts/dashboard/edit-pass.html', context)

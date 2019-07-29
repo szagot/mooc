@@ -1,11 +1,11 @@
 {% extends 'accounts/dashboard.html' %}
 
-{% block title %}{{ block.super }} - Edição{% endblock %}
+{% block title %}{{ block.super }} - Edição de Senha{% endblock %}
 
 {% block breadcrumb %}
     {{ block.super }}
     <li>/</li>
-    <li><a href="{% url 'accounts:edit' %}">Editar Conta</a></li>
+    <li><a href="{% url 'accounts:edit-pass' %}">Editar Senha</a></li>
 {% endblock %}
 
 {% block dashboard_content %}
@@ -13,7 +13,7 @@
         {% csrf_token %}
 
         {% if success %}
-            <p>Os dados foram alterados com sucesso!</p>
+            <p>A senha foi alterada com sucesso!</p>
         {% endif %}
 
         <fieldset>
@@ -29,7 +29,7 @@
             {% endfor %}
 
             <div class="pure-controls">
-                <button type="submit" class="pure-button pure-button-primary">Alterar</button>
+                <button type="submit" class="pure-button pure-button-primary">Alterar Senha</button>
             </div>
         </fieldset>
     </form>
