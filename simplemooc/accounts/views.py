@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login
 from .form import RegisterForm
-from django.conf import settings
 
 
 def register(request):
@@ -13,9 +13,17 @@ def register(request):
         # Formulário válido?
         if form.is_valid():
             # Salva os dados do form
-            form.save()
-            # Redireciona para a URL de login
-            return redirect(settings.LOGIN_URL)
+            user = form.save()
+
+            # Logando o usuário automaticamente
+            user = authenticate(
+                username=user.username,
+                password=form.cleaned_data['password1']
+            )
+            login(request, user)
+
+            # Redireciona para tela inicial
+            return redirect('core:home')
     else:
         form = RegisterForm()
 

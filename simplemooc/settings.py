@@ -147,4 +147,4 @@ CONTACT_EMAIL = 'danielbispo.sp64@gmail.com'
 # Autenticação
 LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'core:home'
-# LOGOUT_URL = 'accounts:logout'
+LOGOUT_URL = 'accounts:logout'
