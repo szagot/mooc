@@ -15,6 +15,7 @@ urlpatterns = [
 
     path('cadastro/', views.register, name='register'),
     path('cadastro/esqueci', views.password_reset, name='reset'),
+    path('cadastro/esqueci/<slug:key>', views.password_reset_confirm, name='reset_confirm'),
     path('editar/usuario', views.edit, name='edit'),
     path('editar/senha/', views.edit_password, name='edit-pass'),
 ]

@@ -1,10 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, get_user_model
-from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.forms import PasswordChangeForm, SetPasswordForm
 from django.contrib.auth.decorators import login_required
 from .form import RegisterForm, EditAccountForm, PasswordResetForm
 from .models import PasswordReset
-from ..core.utils import generate_hash_key
 
 # Isso se faz necessário porque o User é customizado. Isso fará o Django pegar o model criado
 User = get_user_model()
@@ -44,15 +43,31 @@ def password_reset(request):
     # Teve postagem, e o fomulário está valido?
     if form.is_valid():
         # Gera uma nova senha
-        user = User.objects.get(email=form.cleaned_data['email'])
-        key = generate_hash_key(user.username)
-        reset = PasswordReset(key=key, user=user)
-        reset.save()
+        form.save()
         context['success'] = True
 
     context['form'] = form
 
     return render(request, 'accounts/password_reset.html', context)
+
+
+def password_reset_confirm(request, key):
+    """
+    View de confirmação de nova senha
+    :param request:
+    :param key: Chave para se localizar a senha nova
+    """
+    context = {}
+    # Localiza usuário conforme chave passada. Se não encontrar, devolve 404
+    reset = get_object_or_404(PasswordReset, key=key)
+    # Formulário padrão do Django para reset de senha, passando o usuário localizado em reset
+    form = SetPasswordForm(user=reset.user, data=request.POST or None)
+    if form.is_valid():
+        form.save()
+        context['success'] = True
+
+    context['form'] = form
+    return render(request, 'accounts/password_reset_confirm.html', context)
 
 
 # Decorador para verificar se está logado antes de executar a view

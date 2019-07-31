@@ -1,6 +1,10 @@
 from django import forms
 from django.contrib.auth import get_user_model
 
+from .models import PasswordReset
+from ..core.utils import generate_hash_key
+from ..core.mail import send_mail_template
+
 # Isso se faz necessário porque o User é customizado. Isso fará o Django pegar o model criado
 User = get_user_model()
 
@@ -71,6 +75,17 @@ class PasswordResetForm(forms.Form):
             return email
 
         raise forms.ValidationError('Nenhum usuário encontrado com este email')
+
+    def save(self):
+        # Salvando hash novo de senha
+        user = User.objects.get(email=self.cleaned_data['email'])
+        key = generate_hash_key(user.username)
+        reset = PasswordReset(key=key, user=user)
+        reset.save()
+
+        # Enviando email
+        subject = 'Criar nova senha no Simple Mooc'
+        send_mail_template(subject, 'accounts/password_reset_mail.html', {'reset': reset}, [user.email])
 
 
 class EditAccountForm(forms.ModelForm):
