@@ -1,5 +1,7 @@
-from django.shortcuts import render, get_object_or_404
-from .models import Course
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+
+from .models import Course, Enrollment
 from .forms import ContactCourse
 
 
@@ -19,23 +21,36 @@ def details(request, course_slug):
     curso = get_object_or_404(Course, slug=course_slug)  # ou pk=<variavel_id>
     contexto = {}
 
-    # Pegando postagem do form
-    if request.method == 'POST':
-        form = ContactCourse(request.POST)
-        # Formulário é válido?
-        if form.is_valid():
-            # Adiciona uma tag ao contexto
-            contexto['is_valid'] = True
-            # Se precisar acessar os dados validados do formulário, eles estarão no dicionário:
-            # form.cleaned_data
+    # Houve postagem e Formulário é válido?
+    form = ContactCourse(request.POST or None)
+    if form.is_valid():
+        # Adiciona uma tag ao contexto
+        contexto['is_valid'] = True
+        # Se precisar acessar os dados validados do formulário, eles estarão no dicionário:
+        # form.cleaned_data
 
-            # Envia email e limpa o formulário por estar válido
-            form.send_mail(curso)
-            form = ContactCourse()
-    else:
+        # Envia email e limpa o formulário por estar válido
+        form.send_mail(curso)
         form = ContactCourse()
 
     contexto['form'] = form
     contexto['course'] = curso
 
     return render(request, 'courses/detalhe.html', contexto)
+
+
+@login_required
+def enrollments(request, course_slug):
+    """
+    View para inscrições
+    :param request:
+    :param course_slug: slug do curso a ser adicionado
+    """
+    course = get_object_or_404(Course, slug=course_slug)
+    # Pega uma associação ou cria automaticamente para usuário/curso. O segundo parametro é se criou ou não (bool)
+    enrollment, created = Enrollment.objects.get_or_create(user=request.user, course=course)
+    # Precisou criar?
+    if created:
+        enrollment.active()
+
+    return redirect('accounts:dashboard')

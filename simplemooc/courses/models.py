@@ -146,9 +146,16 @@ class Enrollment(models.Model):
         auto_now=True
     )
 
+    def active(self):
+        """
+        Ativando curso do aluno
+        """
+        self.status = 1
+        self.save()
+
     class Meta:
         verbose_name = 'Inscrição'
         verbose_name_plural = 'Inscrições'
-        # Garante que não haverá repetição de cursos para o mesmo usuário.
+        # Garante que não haverá repetição de cursos para o mesmo usuário (liter. Juntos somos Únicos).
         # Cada tupla interna da tupla principal indica as uniões de campos que não devem se repetir
         unique_together = (('user', 'course'),)
