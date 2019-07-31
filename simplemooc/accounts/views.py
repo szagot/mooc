@@ -1,8 +1,13 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, get_user_model
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.decorators import login_required
-from .form import RegisterForm, EditAccountForm
+from .form import RegisterForm, EditAccountForm, PasswordResetForm
+from .models import PasswordReset
+from ..core.utils import generate_hash_key
+
+# Isso se faz necessário porque o User é customizado. Isso fará o Django pegar o model criado
+User = get_user_model()
 
 
 def register(request):
@@ -10,29 +15,44 @@ def register(request):
     View para cadastro de novo usuário
     """
     # Verificando postagem
-    if request.method == 'POST':
-        form = RegisterForm(request.POST)
-        # Formulário válido?
-        if form.is_valid():
-            # Salva os dados do form
-            user = form.save()
+    form = RegisterForm(request.POST or None)
+    if form.is_valid():
+        # Salva os dados do form
+        user = form.save()
 
-            # Logando o usuário automaticamente
-            user = authenticate(
-                username=user.username,
-                password=form.cleaned_data['password1']
-            )
-            login(request, user)
+        # Logando o usuário automaticamente
+        user = authenticate(
+            username=user.username,
+            password=form.cleaned_data['password1']
+        )
+        login(request, user)
 
-            # Redireciona para tela inicial
-            return redirect('core:home')
-    else:
-        form = RegisterForm()
+        # Redireciona para tela inicial
+        return redirect('core:home')
 
-    context = {
-        'form': form
-    }
-    return render(request, 'accounts/register.html', context)
+    return render(request, 'accounts/register.html', {'form': form})
+
+
+def password_reset(request):
+    """
+    View para gerar nova senha, quando o usuário a esqueceu
+    """
+    context = {}
+
+    # Se houve POST, informa, senão cria um form vazio
+    form = PasswordResetForm(request.POST or None)
+    # Teve postagem, e o fomulário está valido?
+    if form.is_valid():
+        # Gera uma nova senha
+        user = User.objects.get(email=form.cleaned_data['email'])
+        key = generate_hash_key(user.username)
+        reset = PasswordReset(key=key, user=user)
+        reset.save()
+        context['success'] = True
+
+    context['form'] = form
+
+    return render(request, 'accounts/password_reset.html', context)
 
 
 # Decorador para verificar se está logado antes de executar a view
@@ -52,16 +72,12 @@ def edit(request):
     context = {}
 
     # Houve postagem?
-    if request.method == 'POST':
-        # Pega a postagem e verifica se os dados estão válidos
-        form = EditAccountForm(request.POST, instance=request.user)
-        if form.is_valid():
-            # Salva o formulário e marca como OK
-            form.save()
-            form = EditAccountForm(instance=request.user)
-            context['success'] = True
-    else:
+    form = EditAccountForm(request.POST or None, instance=request.user)
+    if form.is_valid():
+        # Salva o formulário e marca como OK
+        form.save()
         form = EditAccountForm(instance=request.user)
+        context['success'] = True
 
     context['form'] = form
     return render(request, 'accounts/dashboard/edit.html', context)
@@ -74,14 +90,12 @@ def edit_password(request):
     """
     context = {}
 
-    if request.method == 'POST':
-        form = PasswordChangeForm(data=request.POST, user=request.user)
-        if form.is_valid():
-            form.save()
-            form = PasswordChangeForm(user=request.user)
-            context['success'] = True
-    else:
+    # Teve postagem?
+    form = PasswordChangeForm(data=request.POST or None, user=request.user)
+    if form.is_valid():
+        form.save()
         form = PasswordChangeForm(user=request.user)
+        context['success'] = True
 
     context['form'] = form
     return render(request, 'accounts/dashboard/edit-pass.html', context)

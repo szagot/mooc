@@ -3,6 +3,7 @@ import re
 from django.db import models
 from django.core import validators
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
+from django.conf import settings
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -57,3 +58,32 @@ class User(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = 'Usuário'
         verbose_name_plural = 'Usuários'
+
+
+class PasswordReset(models.Model):
+    """
+    Classe para gerar uma nova senha aleatória quando o usuário esqueceu a senha
+    """
+    # Chave estrangeira. O pai é o User.id (ou User.pk). Normalmente, basta informar o model. Mas aqui,
+    # por se tratar de uma herança do Django, há a necessidade de usar a chave criada em settings
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name='Usuário',
+        on_delete=models.CASCADE,
+        # Serve pra indicar qual o nome do objeto para se trazer todos os PasswordsResets do usuário.
+        # Se não for indicado, o objeto será sempre '<nomedomodel>_set'
+        # Exemplo: resets = user.resets.all()
+        related_name='resets'
+    )
+    key = models.CharField('Chave', max_length=100, unique=True)
+    confirmed = models.BooleanField('Confirmado?', default=False, blank=True)
+    created_at = models.DateTimeField('Criado em', auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.user} em {self.created_at}'
+
+    class Meta:
+        verbose_name = 'Nova Senha'
+        verbose_name_plural = 'Novas Senhas'
+        # Ordenando de modo decrescente pela data
+        ordering = ['-created_at']

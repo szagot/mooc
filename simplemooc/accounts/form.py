@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth import get_user_model
 
-# Isso se faz necessário porque o User agora é customizado. Isso fará o Django pegar o model criado
+# Isso se faz necessário porque o User é customizado. Isso fará o Django pegar o model criado
 User = get_user_model()
 
 
@@ -56,6 +56,21 @@ class RegisterForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username', 'email']
+
+
+class PasswordResetForm(forms.Form):
+    """
+    Formulário para reset de senha.
+    """
+    email = forms.EmailField(label='E-mail')
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        # Verifica se tem um usuário com esse email
+        if User.objects.filter(email=email).exists():
+            return email
+
+        raise forms.ValidationError('Nenhum usuário encontrado com este email')
 
 
 class EditAccountForm(forms.ModelForm):
