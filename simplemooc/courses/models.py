@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 
 class CourseManager(models.Manager):
@@ -25,22 +26,54 @@ class Course(models.Model):
     Modelo para Tabela do BD
     """
     # Campo de texto
-    name = models.CharField('Nome', max_length=100)
+    name = models.CharField(
+        'Nome',
+        max_length=100
+    )
+
     # Campo de Texto para slugs
-    slug = models.SlugField('Atalho')
+    slug = models.SlugField(
+        'Atalho'
+    )
+
     # Campo de textos longos. blank informa que o campo não é obrigatório
-    description = models.TextField('Descrição Simples', blank=True)
-    about = models.TextField('Sobre o Curso', blank=True)
+    description = models.TextField(
+        'Descrição Simples',
+        blank=True
+    )
+
+    about = models.TextField(
+        'Sobre o Curso',
+        blank=True
+    )
+
     # Campo de Data. Não é obrigatório e pode ser NULL no BD
-    start_date = models.DateField('Data de Início', null=True, blank=True)
+    start_date = models.DateField(
+        'Data de Início',
+        null=True,
+        blank=True
+    )
+
     # Campo de imagem. Irá salvar no diretório indicado, porém dentro de MEDIA_ROOT indicado em settings.py
     # Campo dependente da biblioteca Pillow que não vem instalada no Python por padrão
-    image = models.ImageField('Imagem', upload_to='courses/images', null=True, blank=True)
+    image = models.ImageField(
+        'Imagem',
+        upload_to='courses/images',
+        null=True,
+        blank=True
+    )
 
     # Data/Hora que será preenchido automaticamente no INSERT
-    created_at = models.DateTimeField('Criado em', auto_now_add=True)
+    created_at = models.DateTimeField(
+        'Criado em',
+        auto_now_add=True
+    )
+
     # Data/Hora que será preenchido automaticamente no UPDATE
-    updated_at = models.DateTimeField('Atualizado em', auto_now=True)
+    updated_at = models.DateTimeField(
+        'Atualizado em',
+        auto_now=True
+    )
 
     # Substitui o object padrão (manager padrão) pelo acima
     objects = CourseManager()
@@ -68,3 +101,54 @@ class Course(models.Model):
         verbose_name_plural = 'Cursos'
         # Para definir em ordem decrescente, coloque o sinal - na frente. Ex.: ['-name']
         ordering = ['name']
+
+
+class Enrollment(models.Model):
+    """
+    Modelo para Inscrições de Curso
+    """
+
+    # Escolhas para Status
+    STATUS_CHOICES = (
+        (0, 'Pendente'),
+        (1, 'Aprovado'),
+        (2, 'Cancelado'),
+    )
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name='Usuário',
+        related_name='enrollments',
+        on_delete=models.CASCADE
+    )
+
+    course = models.ForeignKey(
+        Course,
+        verbose_name='Curso',
+        related_name='enrollments',
+        on_delete=models.CASCADE
+    )
+
+    status = models.IntegerField(
+        'Situação',
+        choices=STATUS_CHOICES,
+        default=0,
+        blank=True
+    )
+
+    created_at = models.DateTimeField(
+        'Criado Em',
+        auto_now_add=True
+    )
+
+    updated_at = models.DateTimeField(
+        'Atualizado Em',
+        auto_now=True
+    )
+
+    class Meta:
+        verbose_name = 'Inscrição'
+        verbose_name_plural = 'Inscrições'
+        # Garante que não haverá repetição de cursos para o mesmo usuário.
+        # Cada tupla interna da tupla principal indica as uniões de campos que não devem se repetir
+        unique_together = (('user', 'course'),)
