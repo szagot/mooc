@@ -136,6 +136,18 @@ class Lesson(models.Model):
         null=True
     )
 
+    # Data/Hora que será preenchido automaticamente no INSERT
+    created_at = models.DateTimeField(
+        'Criado em',
+        auto_now_add=True
+    )
+
+    # Data/Hora que será preenchido automaticamente no UPDATE
+    updated_at = models.DateTimeField(
+        'Atualizado em',
+        auto_now=True
+    )
+
     def __str__(self):
         return self.name
 
@@ -168,6 +180,18 @@ class Material(models.Model):
         upload_to='lessons/materials',
         blank=True,
         null=True
+    )
+
+    # Data/Hora que será preenchido automaticamente no INSERT
+    created_at = models.DateTimeField(
+        'Criado em',
+        auto_now_add=True
+    )
+
+    # Data/Hora que será preenchido automaticamente no UPDATE
+    updated_at = models.DateTimeField(
+        'Atualizado em',
+        auto_now=True
     )
 
     def is_embedded(self):
