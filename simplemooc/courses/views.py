@@ -4,6 +4,7 @@ from django.contrib import messages
 
 from .models import Course, Enrollment
 from .forms import ContactCourse, CommentForm
+from .decorators import enrollment_required
 
 
 def index(request):
@@ -79,20 +80,13 @@ def undo_enrollment(request, course_slug):
 
 
 @login_required
+@enrollment_required
 def announcements(request, course_slug):
     """
     View para anuncios do curso no dashboard
     """
-    # Pegando curso
-    course = get_object_or_404(Course, slug=course_slug)
-    # Verifica a inscrição apenas se não for um membro administrador
-    if not request.user.is_staff:
-        # Pegando inscrição
-        enrollment = get_object_or_404(Enrollment, course=course, user=request.user)
-        # Verifica se o aluno está aprovado no curso
-        if not enrollment.is_approved():
-            messages.error(request, 'A sua inscrição está pendente')
-            return redirect('accounts:dashboard')
+    # Pegando curso (no decorador)
+    course = request.course
 
     return render(request, 'courses/dashboard/announcements.html', {
         'course': course,
@@ -101,17 +95,10 @@ def announcements(request, course_slug):
 
 
 @login_required
+@enrollment_required
 def show_announcement(request, course_slug, announcement_id):
-    # Pegando curso
-    course = get_object_or_404(Course, slug=course_slug)
-    # Verifica a inscrição apenas se não for um membro administrador
-    if not request.user.is_staff:
-        # Pegando inscrição
-        enrollment = get_object_or_404(Enrollment, course=course, user=request.user)
-        # Verifica se o aluno está aprovado no curso
-        if not enrollment.is_approved():
-            messages.error(request, 'A sua inscrição está pendente')
-            return redirect('accounts:dashboard')
+    # Pegando curso (no decorador)
+    course = request.course
     # Pegando anúncio
     announcement = get_object_or_404(course.announcements.all(), pk=announcement_id)
 
@@ -133,3 +120,9 @@ def show_announcement(request, course_slug, announcement_id):
         'announcement': announcement,
         'form': form
     })
+
+
+@login_required
+@enrollment_required
+def lessons(request, course_slug):
+    pass
