@@ -2,8 +2,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
-from .models import Course, Enrollment, Announcement
-from .forms import ContactCourse
+from .models import Course, Enrollment
+from .forms import ContactCourse, CommentForm
 
 
 def index(request):
@@ -112,10 +112,24 @@ def show_announcement(request, course_slug, announcement_id):
         if not enrollment.is_approved():
             messages.error(request, 'A sua inscrição está pendente')
             return redirect('accounts:dashboard')
-
+    # Pegando anúncio
     announcement = get_object_or_404(course.announcements.all(), pk=announcement_id)
+
+    # Teve postage,?
+    form = CommentForm(request.POST or None)
+    if form.is_valid():
+        # Cria o objeto, mas não salva
+        comment = form.save(commit=False)
+        # Preenche os campos que faltam
+        comment.user = request.user
+        comment.announcement = announcement
+        # Agora sim, salvando!
+        comment.save()
+        form = CommentForm()
+        messages.success(request, 'Seu comentário foi postado!')
 
     return render(request, 'courses/dashboard/show_announcement.html', {
         'course': course,
-        'announcement': announcement
+        'announcement': announcement,
+        'form': form
     })
