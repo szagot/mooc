@@ -211,10 +211,10 @@ class Comment(models.Model):
         on_delete=models.CASCADE
     )
 
-    course = models.ForeignKey(
+    user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        verbose_name='Curso',
-        related_name='courses',
+        verbose_name='Usuário',
+        related_name='users',
         on_delete=models.CASCADE
     )
 
@@ -231,6 +231,9 @@ class Comment(models.Model):
         'Atualizado Em',
         auto_now=True
     )
+
+    def __str__(self):
+        return self.comment
 
     class Meta:
         verbose_name = 'Comentário'
