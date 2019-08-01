@@ -104,6 +104,87 @@ class Course(models.Model):
         ordering = ['name']
 
 
+class Lesson(models.Model):
+    course = models.ForeignKey(
+        Course,
+        verbose_name='Curso',
+        related_name='lessons',
+        on_delete=models.CASCADE
+    )
+
+    name = models.CharField(
+        'Nome',
+        max_length=100
+    )
+
+    description = models.TextField(
+        'Descrição',
+        blank=True
+    )
+
+    # Ordenação dos cursos
+    number = models.IntegerField(
+        'Número (ordem)',
+        blank=True,
+        default=0
+    )
+
+    # Data de liberação
+    release_date = models.DateField(
+        'Data de Liberação',
+        blank=True,
+        null=True
+    )
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Aula'
+        verbose_name_plural = 'Aulas'
+        ordering = ['number']
+
+
+class Material(models.Model):
+    lesson = models.ForeignKey(
+        Lesson,
+        verbose_name='Aula',
+        related_name='materials',
+        on_delete=models.CASCADE
+    )
+
+    name = models.CharField(
+        'Nome',
+        max_length=100
+    )
+
+    embedded = models.TextField(
+        'Vídeos e Conteúdo Embutido',
+        blank=True,
+        null=True
+    )
+
+    file = models.FileField(
+        upload_to='lessons/materials',
+        blank=True,
+        null=True
+    )
+
+    def is_embedded(self):
+        """
+        É do tipo embutido? Ou arquivo?
+        :return: True para embutido, False para arquivo
+        """
+        return bool(self.embedded)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Material'
+        verbose_name_plural = 'Materiais'
+
+
 class Enrollment(models.Model):
     """
     Modelo para Inscrições de Curso
