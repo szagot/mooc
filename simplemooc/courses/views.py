@@ -95,5 +95,6 @@ def announcements(request, course_slug):
             return redirect('accounts:dashboard')
 
     return render(request, 'courses/dashboard/announcements.html', {
-        'course': course
+        'course': course,
+        'announcements': course.announcements.all()
     })
