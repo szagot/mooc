@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from ..core.mail import send_mail_template
 
 
 class CourseManager(models.Manager):
@@ -239,3 +240,35 @@ class Comment(models.Model):
         verbose_name = 'Comentário'
         verbose_name_plural = 'Comentários'
         ordering = ['created_at']
+
+
+def post_save_announcement(instance: Announcement, created, **kwargs):
+    """
+    Signal. Gatilho a ser disparado após salvar um anúncio.
+    Será enviado um email aos inscritos do curso relacionado ao anúncio
+
+    :param instance: A instancia deste sinal que deve ser sempre o model Announcement
+    :param created: A ação foi disparada na criação? Se for no update, o valor seá False
+    :param kwargs: Demais parâmetros do disparo. Obrigatório informar
+    """
+    # Envia apenas ser for na criação
+    if created:
+        context = {
+            'announcement': instance
+        }
+        # Pegando inscrições relacionados ao anuncio
+        enrollments = Enrollment.objects.filter(course=instance.course, status=1)
+        # Enviando email para cada inscrito separadamente
+        for enrollment in enrollments:
+            send_mail_template(instance.title, 'courses/announcements_mail.html', context, [enrollment.user.email])
+
+
+# Registrando Gatilho de Pós Salvamento
+models.signals.post_save.connect(
+    # Função a ser executada
+    post_save_announcement,
+    # Qual o modelo que deve disparar o sinal
+    sender=Announcement,
+    # Evita que o sinal seja cadastrado em duplicidade
+    dispatch_uid='post_save_announcement'
+)
