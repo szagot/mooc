@@ -165,3 +165,74 @@ class Enrollment(models.Model):
         # Garante que não haverá repetição de cursos para o mesmo usuário (liter. Juntos somos Únicos).
         # Cada tupla interna da tupla principal indica as uniões de campos que não devem se repetir
         unique_together = (('user', 'course'),)
+
+
+class Announcement(models.Model):
+    course = models.ForeignKey(
+        Course,
+        verbose_name='Curso',
+        related_name='announcements',
+        on_delete=models.CASCADE
+    )
+
+    title = models.CharField(
+        'Título',
+        max_length=100
+    )
+
+    content = models.TextField(
+        'Conteúdo'
+    )
+
+    created_at = models.DateTimeField(
+        'Criado Em',
+        auto_now_add=True
+    )
+
+    updated_at = models.DateTimeField(
+        'Atualizado Em',
+        auto_now=True
+    )
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = 'Anúncio'
+        verbose_name_plural = 'Anúncios'
+        ordering = ['-created_at']
+
+
+class Comment(models.Model):
+    announcement = models.ForeignKey(
+        Announcement,
+        verbose_name='Anúncio',
+        related_name='comments',
+        on_delete=models.CASCADE
+    )
+
+    course = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name='Curso',
+        related_name='courses',
+        on_delete=models.CASCADE
+    )
+
+    comment = models.TextField(
+        'Comentário'
+    )
+
+    created_at = models.DateTimeField(
+        'Criado Em',
+        auto_now_add=True
+    )
+
+    updated_at = models.DateTimeField(
+        'Atualizado Em',
+        auto_now=True
+    )
+
+    class Meta:
+        verbose_name = 'Comentário'
+        verbose_name_plural = 'Comentários'
+        ordering = ['created_at']
