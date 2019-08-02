@@ -1,0 +1,35 @@
+{% extends 'courses/dashboard.html' %}
+
+{% block title %}{{ block.super }} - Aulas{% endblock %}
+
+{% block breadcrumb %}
+    {{ block.super }}
+    <li>/</li>
+    <li><a href="{% url 'courses:lessons' course.slug %}">Aulas</a></li>
+{% endblock %}
+
+
+{% block dashboard_content %}
+    {% for lesson in lessons %}
+        <div class="well">
+            <h2><a href="{% url 'courses:show_lesson' course.slug lesson.pk %}">{{ lesson }}</a></h2>
+            <p>
+                {# truncatewords coloca apenas o número de palavras informadas e depois põe ... #}
+                {{ lesson.description|truncatewords:50|linebreaksbr }}
+                <br/>
+                <br/>
+                <a href="{% url 'courses:show_lesson' course.slug lesson.pk %}" title="">
+                    <i class="fa fa-eye"></i>
+                    Acessar Aula
+                </a>
+            </p>
+        </div>
+    {% empty %}
+        <div class="well">
+            <h2>
+                Nenhuma aula disponível.
+            </h2>
+        </div>
+
+    {% endfor %}
+{% endblock %}

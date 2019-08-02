@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
-from .models import Course, Enrollment
+from .models import Course, Enrollment, Lesson
 from .forms import ContactCourse, CommentForm
 from .decorators import enrollment_required
 
@@ -125,4 +125,28 @@ def show_announcement(request, course_slug, announcement_id):
 @login_required
 @enrollment_required
 def lessons(request, course_slug):
-    pass
+    # Pegando curso (no decorador)
+    course = request.course
+    return render(request, 'courses/dashboard/lessons.html', {
+        'course': course,
+        # Chama todas as aulas se for admin, ou apenas as liberadas, caso contrário
+        'lessons': course.lessons.all() if request.user.is_staff else course.release_lessons()
+    })
+
+
+@login_required
+@enrollment_required
+def show_lesson(request, course_slug, lesson_id):
+    # Pegando curso (no decorador)
+    course = request.course
+    # Pega a aula, garantindo que ID informado pertence ao curso informado
+    lesson = get_object_or_404(Lesson, pk=lesson_id, course=course)
+    # Se não for admin, verifica se a aula está disponível
+    if not request.user.is_staff and not lesson.is_available():
+        messages.error(request, 'Essa aula ainda não está disponível')
+        redirect('accounts:dashboard')
+
+    return render(request, 'courses/dashboard/show_lesson.html', {
+        'course': course,
+        'lesson': lesson
+    })

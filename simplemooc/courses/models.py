@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
 from ..core.mail import send_mail_template
 
 
@@ -94,6 +95,14 @@ class Course(models.Model):
         from django.urls import reverse
         return reverse('courses:details', args=[str(self.slug)])
 
+    def release_lessons(self):
+        """
+        Retorna todas as aulas deste curso que estão liberadAS
+        """
+        today = timezone.now().date()
+        # lte = menor ou igual a (https://docs.djangoproject.com/en/2.2/ref/models/querysets/)
+        return self.lessons.filter(release_date__lte=today)
+
     class Meta:
         """
         Importante para a tradução do nome da Classe
@@ -147,6 +156,15 @@ class Lesson(models.Model):
         'Atualizado em',
         auto_now=True
     )
+
+    def is_available(self):
+        if self.release_date:
+            # pega o dia atual
+            today = timezone.now().date()
+            # retorna se o curso já foi liberado hoje
+            return today >= self.release_date
+
+        return False
 
     def __str__(self):
         return self.name
