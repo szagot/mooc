@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
-from .models import Course, Enrollment, Lesson
+from .models import Course, Enrollment, Lesson, Material
 from .forms import ContactCourse, CommentForm
 from .decorators import enrollment_required
 
@@ -144,9 +144,31 @@ def show_lesson(request, course_slug, lesson_id):
     # Se não for admin, verifica se a aula está disponível
     if not request.user.is_staff and not lesson.is_available():
         messages.error(request, 'Essa aula ainda não está disponível')
-        redirect('accounts:dashboard')
+        return redirect('accounts:dashboard')
 
     return render(request, 'courses/dashboard/show_lesson.html', {
         'course': course,
         'lesson': lesson
+    })
+
+
+@login_required
+@enrollment_required
+def material(request, course_slug, material_id):
+    # Pegando curso (no decorador)
+    course = request.course
+    # Pega o material, garantindo que ID informado pertence ao curso informado da aula informado
+    this_material = get_object_or_404(Material, pk=material_id, lesson__course=course)
+    # Se não for admin, verifica se a aula está disponível
+    if not request.user.is_staff and not this_material.lesson.is_available():
+        messages.error(request, 'Essa aula ainda não está disponível, e nem os materiais dela')
+        return redirect('accounts:dashboard')
+    # Verifica se é embedded. Se não redireciona
+    if not this_material.is_embedded():
+        return redirect(this_material.file.url)
+
+    return render(request, 'courses/dashboard/material.html', {
+        'course': course,
+        'lesson': this_material.lesson,
+        'material': this_material
     })

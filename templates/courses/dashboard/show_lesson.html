@@ -30,18 +30,20 @@
                 </thead>
                 <tbody>
                 {% for material in lesson.materials.all %}
-                    <tr>
+                    {# cycle define um ciclo, trocando entre cada argumento a cada passada no for #}
+                    {# https://docs.djangoproject.com/en/2.2/ref/templates/builtins/#cycle #}
+                    <tr class="{% cycle '' 'pure-table-odd' %}">
                         <td>
                             {{ material }}
                         </td>
                         <td>
                             {% if material.is_embedded %}
-                                <a href="#">
+                                <a href="{% url 'courses:material' course.slug material.pk %}">
                                     <i class="fa fa-video-camera"></i>
                                     Acessar
                                 </a>
                             {% else %}
-                                <a href="#">
+                                <a href="{{ material.file.url }}" target="_blank">
                                     <i class="fa fa-download"></i>
                                     Baixar
                                 </a>
